@@ -1,0 +1,17 @@
+inputdir: /vortexfs1/omics/alexander/data/single-cell/2019-08-singlecell/WH_Pilot/
+outputdir: /vortexfs1/omics/alexander/data/single-cell/alevin-WHPilot-10232019
+scratch: /vortexfs1/scratch/akrinos/drop-seq
+indexdir: data/indices/
+datadir: data/
+referencedir: /vortexfs1/omics/alexander/data/mmetsp/
+#referencedir: /vortexfs1/omics/data/mmetsp/imicrobe/ftp.imicrobe.us/camera/combined_assemblies
+alex: Alexandrium-fundyense_MMETSP0347
+ehux: Emiliania-huxleyi-374
+#thaps: Thalassiosira-pseudonana-CCMP1335
+thaps: Thalassiosira-sp._MMETSP1071
+pn: Pseudo-nitzschia-pungens_MMETSP1060
+het: Heterocapsa-triquestra_MMETSP0448
+amoeb: Amoebophrya_MMETSP0795
+subdirectory: data/subdirectory_table.tsv
+date: "071119"
+
