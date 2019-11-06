@@ -34,7 +34,7 @@ DICT_NAMES = {Heterocap_name:"HT",\
               Parasite_name:"AB",\
               Alex_name:"AX",\
               Ehux_name:"EH"} 
-DICT_CODES = invert_dict(DICT_NAMES) 
+DICT_CODES = {v: k for k, v in DICT_NAMES.items()} 
 
 GROUP_NAMES = []
 
