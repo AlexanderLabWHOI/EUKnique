@@ -15,7 +15,7 @@ import numpy as np
 import yaml
 
 list_orgs = ["Heterocapsa triquestra", "Amoebophrya", 
-             "Alexandrium", 
+             "Alexandrium fundyense", 
              "Pseudo-nitzschia pungens", "Thalassiosira sp."]
 list_orgs_short = ["HT", "AB", "AX", "PN", "TP"]
 
