@@ -1,0 +1,40 @@
+configfile: "config.yaml"
+
+INPUTDIR = config["inputdir"]
+INDEXDIR = config["indexdir"]
+OUTPUTDIR = config["outputdir"]
+DATADIR = config["datadir"]
+REFDIR = config["referencedir"]
+
+import os
+from snakemake.exceptions import WorkflowError
+
+# Naming convention for this experiment; change as needed
+experimentID = "_071119_1_S1" 
+
+# In order to use, the CB+UMI file (cb; fastq)  for the data as well as 
+# the read sequence file (readseq; fastq) must be named with the grouping
+# of organisms from that experiment, preferably in alphabetical order to facilitate
+# index generation. E.g., a group of Thaps and E. hux would
+# be named EH_TH for the groupname, for a total filename of
+# EH_TH_cb.fastq.gz. 
+rule alevin:
+    input:
+        cb =  os.path.join(INPUTDIR, "{directory}", "{groupname}" + "_R1_001.fastq.gz"),
+        readseq = os.path.join(INPUTDIR, "{directory}", "{groupname}" + "_R2_001.fastq.gz"),
+        index = os.path.join(INDEXDIR, "{index_name}_index"),
+        tg = os.path.join(DATADIR, "tgMap_{index_name}.tsv")
+    output:
+        dir_out = directory(os.path.join(OUTPUTDIR, "{directory}", "{index_name}", "{groupname}")),
+        #quants = os.path.join(OUTPUTDIR, "{directory}", "{index_name}", "{groupname}", "{groupname}_quants_mat.gz"),
+        #quants_mats_cols = os.path.join(OUTPUTDIR, "{directory}", "{index_name}", "{groupname}", "{groupname}_quants_mat_cols.txt"),
+        #quants_mats_rows = os.path.join(OUTPUTDIR, "{directory}", "{index_name}", "{groupname}", "{groupname}_quants_mat_rows.txt"),
+        #quants_tier = os.path.join(OUTPUTDIR, "{directory}", "{index_name}", "{groupname}", "{groupname}_quants_tier.mat.gz")
+    params:
+        lib = "ISR",
+        method = "dropSeq"
+    shell:
+        """
+        salmon alevin -l {params.lib} -1 {input.cb} -2 {input.readseq} --dropseq -i {input.index} -p 10 -o {output.dir_out} --tgMap {input.tg} --keepCBFraction 1 --freqThreshold 1 --dumpFeatures 
+
+        """ 
