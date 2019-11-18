@@ -2,7 +2,23 @@ The purpose of this repository is to analyze single-cell RNA sequencing data of 
 
 ## Set-up
 
-To use this repository, the config file needs to updated with the paths of the single-cell RNA-seq data in `fastq` format. In addition, `salmon index` must be used to create a salmon index of the relevant reference genomes and transcriptomes of the species in question for the particular sequence experiment. 
+To use this repository, the config file needs to updated with the paths of the single-cell RNA-seq data in `fastq` format. In addition, `salmon index` must be used to create a salmon index of the relevant reference genomes and transcriptomes of the species in question for the particular sequence experiment. In order to do this, change the `config.yaml` file to reflect the data input directory, which should be organized via subdirectories of arrays containing the forward and reverse sequence output fasta files. Then, run the following scripts, in this order: 
+
+* `accessory-scripts/make_subdirectory_table.py`
+* `accessory-scripts/make_tg_map.py`
+* `accessory-scripts/make_salmon_indices.py`
+
+If one of the species being used in one of the arrays is not in the standard list of organisms (_Alexandrium fundyense_, _Heterocapsa rotundata_, _Thalassiosira pseudonana_, and _Pseudo-nitzschia pungens_), a reference transcriptome for the organism following the given naming convention must either be added, or the MMETSP id for that organism must be added such that the reference transcriptome can be retrieved from the MMETSP database.
+
+## Running the pipeline
+
+Running the pipeline is as simple as customizing the script used to generate the salmon index file based on the relevant reference genomes, and then running:
+
+``
+snakemake --use-conda
+``
+
+in the main directory of the repository. 
 
 ## Description of original Seq-Well experiment for which analysis pipeline was designed
 
@@ -29,14 +45,3 @@ Example listing of data entries used:
 | CAM\_ASM\_000047 | *Heterocapsa rotundata* | https://www.imicrobe.us/#/samples/1663 | MMETSP0503 |
 | CAM\_SMPL\_002340 | *Skeletonema costatum* 1716 | https://www.imicrobe.us/#/samples/1676 | MMETSP0013 |
 | CAM\_SMPL\_002341 | *Nitzchia sp.* RCC80 | https://www.imicrobe.us/#/samples/1677 | MMETSP0014 |
-
-
-## Running the pipeline
-
-Running the pipeline is as simple as customizing the script used to generate the salmon index file based on the relevant reference genomes, and then running:
-
-``
-snakemake --use-conda
-``
-
-in the main directory of the repository. 
