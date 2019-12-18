@@ -21,12 +21,10 @@ SUBDIR_TABLE = pd.read_csv(SUBDIRECTORY, sep = "\t")
 DATE = config["date"]
 
 PN_name = config["pn"]
-#Alex_name = "Alexandrium-catenella_MMETSP0790"
-#Alex_name = "Alexandrium_combined"
 Alex_name = config["alex"]
 Parasite_name = config["amoeb"]
 Ehux_name = config["ehux"]
-Thaps_name = config["thaps"] # Thalassiosira-sp._MMETSP1071
+Thaps_name = config["thaps"] 
 Heterocap_name = config["het"]
 DICT_NAMES = {Heterocap_name:"HT",\
               Thaps_name:"TP",\
@@ -47,10 +45,10 @@ def make_index(list_species):
     tg_map_names = ""
     species_sep = list_species.split("_")
     for species in species_sep:
-        t = DICT_CODES[species]
-        string_input = string_input + os.path.join(REFERENCEDIR, t.split("_")[1] + "_clean.fasta") + " "             
-        #string_input = string_input + " " + os.path.join(DATADIR, t + "_nt.fasta")
-        tg_map_names = tg_map_names + os.path.join(DATADIR, "tgMap_" + t + ".tsv ")
+        t_all = DICT_CODES[species].split(",")
+        for t in t_all:
+            string_input = string_input + os.path.join(DATADIR, t.split("_")[1] + "_combined.fasta") + " "
+            tg_map_names = tg_map_names + os.path.join(DATADIR, "tgMap_" + t + ".tsv ")
     
     print(string_input)
     path_fasta = os.path.join(DATADIR, list_species + ".fa")
@@ -65,9 +63,6 @@ def make_index(list_species):
 
     # concatenate transcript-to-gene maps
     os.system("cat " + tg_map_names + " > " + path_tgmap)
-
-
-list_cultures = [[Ehux_name], [Alex_name,Parasite_name],[Alex_name,Heterocap_name],[Thaps_name],[Alex_name,Heterocap_name],[Alex_name,PN_name],[Alex_name],[PN_name,Thaps_name,Alex_name,Heterocap_name],[PN_name]] 
 
 FILE_NAMES = SUBDIR_TABLE.File
 INDEX_NAMES = SUBDIR_TABLE.Index

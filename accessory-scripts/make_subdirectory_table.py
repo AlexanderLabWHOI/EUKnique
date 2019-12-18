@@ -22,6 +22,11 @@ for s in sampledirs:
     indices = [p.split("_S")[0] for p in files]
     indices = ["".join(i for i in index if not i.isdigit()) for index in indices]
     indices = [index.split("_") for index in indices]
+    
+    # this is only if you have the S000X in the file name
+    indices = [[i for i in indices_short if i != 'S'] for indices_short in indices]   
+
+    # AX3 indicates that we have an infected form of amoebaphyra
     if "AX3" in files[0].split("_"):
         indices[0].append("AB") 
     indices = ["_".join(sorted(list(set([i for i in index if i])))) for index in indices]

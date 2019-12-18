@@ -2,14 +2,17 @@ configfile: "config.yaml"
 
 import io
 import os
+import sys
 import yaml
 import pandas as pd
 import numpy as np
 import pathlib
 from snakemake.exceptions import print_exception, WorkflowError 
+# allows us to call modules
+sys.path.insert(1, 'snake-modules')
 
-with open("config.yaml", "r") as configfile:
-    config = yaml.load(configfile)
+#with open("config.yaml", "r") as configfile:
+#    config = yaml.load(configfile)
 
 INPUTDIR = config["inputdir"]
 REFERENCEDIR = config["referencedir"]
@@ -20,7 +23,8 @@ SUBDIRECTORY = config["subdirectory"]
 SUBDIR_TABLE = pd.read_csv(SUBDIRECTORY, sep = "\t")
 DATE = config["date"]
 
-include: "modules/alevin-snake"
+include: "snake-modules/alevin-snake"
+include: "snake-modules/salmon-snake"
 
 PN_name = config["pn"]
 Alex_name = config["alex"]
@@ -32,7 +36,7 @@ DICT_NAMES = {Heterocap_name:"HT",\
               PN_name:"PN",\
               Alex_name:"AX",\
               Ehux_name:"EH"}  
-DICT_CODES = invert_dict(DICT_NAMES)
+DICT_CODES = {v: k for k,v in DICT_NAMES.items()}
 
 GROUP_NAMES = []
 
@@ -41,6 +45,11 @@ INDEX_NAMES = SUBDIR_TABLE.Index
 DIRECTORIES = SUBDIR_TABLE.Directory
 
 list_cultures = INDEX_NAMES
+
+if config["maketg"] == 1:
+    import preprocessing
+if config["makesalmon"] == 1:
+    import salmon
 
 rule all:
     input: 
