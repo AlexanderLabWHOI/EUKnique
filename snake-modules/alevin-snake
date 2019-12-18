@@ -35,6 +35,6 @@ rule alevin:
         method = "dropSeq"
     shell:
         """
-        salmon alevin -l {params.lib} -1 {input.cb} -2 {input.readseq} --dropseq -i {input.index} -p 10 -o {output.dir_out} --tgMap {input.tg} --keepCBFraction 1 --freqThreshold 1 --dumpFeatures 
+        salmon alevin -l {params.lib} -1 {input.cb} -2 {input.readseq} --dropseq -i {input.index} -p 10 -o {output.dir_out} --tgMap {input.tg} --keepCBFraction 0.2 --dumpFeatures 
 
         """ 

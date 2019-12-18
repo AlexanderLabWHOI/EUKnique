@@ -2,7 +2,9 @@ The purpose of this repository is to analyze single-cell RNA sequencing data of 
 
 ## Set-up
 
-To use this repository, the config file needs to updated with the paths of the single-cell RNA-seq data in `fastq` format. In addition, `salmon index` must be used to create a salmon index of the relevant reference genomes and transcriptomes of the species in question for the particular sequence experiment. 
+To use this repository, the config file needs to updated with the paths of the single-cell RNA-seq data in `fastq` format. In addition, `salmon index` must be used to create a salmon index of the relevant reference genomes and transcriptomes of the species in question for the particular sequence experiment. If you wish to make the `salmon` indices concurrently with running the pipeline, set `makesalmon` to 1 in `config.yaml`.
+
+In addition, a transcript to gene map must be created for each of the reference transcriptomes. This can be accomplished by modifying and running the `make_subdirectory_table.py` and `make_tg_map.py` scripts in `accessory-scripts`, or by setting `maketg` to 1 in `config.yaml`. Both the `salmon` index and the transcript-to-gene map only need to be created once per reference transcriptome, so these flags may be set to zero once the pipeline has been run once successfully. 
 
 ## Description of original Seq-Well experiment for which analysis pipeline was designed
 
