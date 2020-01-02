@@ -17,11 +17,11 @@ with open(relative_dir + "/config.yaml", "r") as configfile:
 relative_dir = config["homedir"]
     
 INPUTDIR = config["inputdir"]
-SUBDIRECTDIR = config["subdirectory"]
+SUBDIRECT = config["subdirectory"]
 REFERENCEDIR = config["referencedir"]
 DATADIR = config["datadir"]
 
-samples_avail = pd.read_csv("../data/forNCBI_MMETSP.csv")
+samples_avail = pd.read_csv(os.path.join(DATADIR, "forNCBI_MMETSP.csv"))
 sample_names = list(samples_avail.SAMPLE_NAME)
 sample_names = [curr.split("C")[0].split("_")[0] for curr in sample_names]
     
@@ -53,7 +53,7 @@ for s in sampledirs:
     subdirectory_table = subdirectory_table.append(thisset)
 
 print(subdirectory_table)
-subdirectory_table.to_csv(path_or_buf = os.path.join(relative_dir,SUBDIRECTDIR), sep = "\t")
+subdirectory_table.to_csv(path_or_buf = os.path.join(relative_dir,SUBDIRECT), sep = "\t")
 
 
 # The org_list is the name of all the organisms we want to get references for
@@ -76,6 +76,7 @@ for curr_num in range(len(org_list)):
     MMname_curr = []
     orgnames_curr = []
     for mm in MMname_list:
+        print(mm)
         MMname_curr.append(mm.split("_")[1])
         orgnames_curr.append(mm.split("_")[0])
         
@@ -92,21 +93,21 @@ for gg in range(0,len(MMETSP_names)):
     file_names = []
     for f in MMETSP_names[gg]:
         # if the current sample is not in the MMETSP list
-        print(f)
         if f not in sample_names:
-            file_names.append("Acatassembly.fasta")
+            # if not in the MMETSP, copy the fasta file to the data directory and name it by exactly 
+            # that name in the config file
+            file_names.append(os.path.join(DATADIR, f + ".fasta")) #"Acatassembly.fasta")
         else:
             file_names.append(os.path.join(REFERENCEDIR, f + "_clean.fasta"))
         
     species_dir_name = os.path.join(relative_dir, DATADIR) 
-    for f in range(0, len(file_names)):
-        curr_file = file_names[f]
-        to_write = species_dir_name + list_orgs[gg].replace(" ", "") + "_" + MMETSP_names[gg][f] + "_nt.fasta"
-        os.system("cp " + curr_file + " " + to_write)
+    #for f in range(0, len(file_names)):
+    #    curr_file = file_names[f]
+    #    to_write = species_dir_name + list_orgs[gg][f].replace(" ", "") + "_" + MMETSP_names[gg][f] + "_nt.fasta"
+    #    os.system("cp " + curr_file + " " + to_write)
 
-    os.system("cat " + " ".join(file_names) + " > " +                   os.path.join(relative_dir, DATADIR, list_orgs[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta"))
-    to_write = os.path.join(relative_dir, DATADIR, list_orgs[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta")
-    print(to_write)
+    os.system("cat " + " ".join(file_names) + " > " + os.path.join(species_dir_name, list_orgs_short[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta"))
+    to_write = os.path.join(species_dir_name, list_orgs_short[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta")
     files_written.append(to_write) # need to extend if using list option
     
 ##### CREATE TRANSCRIPT-TO-GENE MAP #####
@@ -118,20 +119,27 @@ for ff in range(0,len(files_written)):
     g = MMETSP_names[ff]
     short_name = list_orgs_short[ff]
     
-    file_loc = "../data/tgMap_" + short_name + ".tsv"#list_orgs[ff].replace(" ", "-") + "_" + g + ".tsv"
+    file_loc = os.path.join(relative_dir,DATADIR, "tgMap_" + short_name + ".tsv") #list_orgs[ff].replace(" ", "-") + "_" + g + ".tsv"
     os.system("touch " + file_loc)
+    os.system("touch " + os.path.join(relative_dir,DATADIR,"tgMap.tsv"))
 
-    with open("../data/tgMap.tsv", 'wt') as tgMap_file:
+    #with open(os.path.join(relative_dir,DATADIR,"tgMap.tsv"), 'wt') as tgMap_file:
+    with open(file_loc, 'wt') as tgMap_file: 
         transcript_to_gene = csv.writer(tgMap_file, delimiter='\t')
         command = str("cat " + str(f) + " | grep \">\" | cut -f2 -d \">\" | cut -f1 -d \" \" > transcript_names.txt")
         os.system(command)
         transcripts = open("transcript_names.txt", "r")
         for transcript in transcripts:
-            genes = [transcript.replace("\n",""), list_orgs_short[ff] + "-" + "DN" + transcript.split("|")[3].replace("\n", "")]
+            #genes = [transcript.replace("\n",""), list_orgs_short[ff] + "-" + "DN" + transcript.split("|")[3].replace("\n", "")]
+            if transcript.split("_")[0] == "TRINITY":
+                genes = [transcript.replace("\n",""),list_orgs_short[ff]+"-"+transcript.split("_")[1]]
+            else:
+                if(len(transcript.split("|")) != 4):
+                    print(transcript)
+                genes = [transcript.replace("\n",""),list_orgs_short[ff]+"-"+"DN"+transcript.split("|")[len(transcript.split("|"))-1].replace("\n","")]
             counter = counter + 1
             transcript_to_gene.writerow(genes)
-    
-    os.system("mv " + os.path.join(relative_dir,"data/tgMap.tsv ") + file_loc)
+        #os.system("mv " + os.path.join(relative_dir,DATADIR,"tgMap.tsv ") + file_loc)
     tgMap_file.close()
 
 print("Done!")

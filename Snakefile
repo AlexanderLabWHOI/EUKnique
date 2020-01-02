@@ -24,7 +24,6 @@ SUBDIR_TABLE = pd.read_csv(SUBDIRECTORY, sep = "\t")
 DATE = config["date"]
 
 include: "snake-modules/alevin-snake"
-include: "snake-modules/salmon-snake"
 
 PN_name = config["pn"]
 Alex_name = config["alex"]

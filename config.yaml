@@ -1,6 +1,6 @@
 homedir: /vortexfs1/omics/alexander/akrinos/euknique
 inputdir: /vortexfs1/omics/alexander/data/single-cell/2019-08-singlecell/WH_Pilot
-outputdir: /vortexfs1/omics/alexander/data/single-cell/alevin-WHPilot-12182019
+outputdir: /vortexfs1/omics/alexander/data/single-cell/alevin-WHPilot-12192019_2
 scratch: /vortexfs1/scratch/akrinos/drop-seq
 indexdir: data/indices/
 datadir: data/
@@ -8,8 +8,11 @@ referencedir: /vortexfs1/omics/alexander/data/mmetsp/
 #referencedir: /vortexfs1/omics/data/mmetsp/imicrobe/ftp.imicrobe.us/camera/combined_assemblies
 configlist: alex,thaps,pn,het,amoeb
 smallnamelist: AX,TP,PN,HT,AB
-makesalmon: 1
+makesalmon: 0
 maketg: 1
+# use reverse reads to build indices (also can be done w specifying "reverse" as transcriptome below
+usereverse: 1
+#alex: Alexandrium-fundyense_Acatassembly 
 alex: Alexandrium-fundyense_MMETSP0347,Alexandrium-fundyense_MMETSP0196
 ehux: Emiliania-huxleyi-374
 #thaps: Thalassiosira-pseudonana-CCMP1335
