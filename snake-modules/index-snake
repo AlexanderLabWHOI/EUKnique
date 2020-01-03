@@ -1,0 +1,26 @@
+configfile: "config.yaml"
+
+
+import io 
+import os
+
+DATADIR = config["datadir"]
+USEREVERSE = config["usereverse"]
+
+rule index:
+    input:
+        oneside = os.path.join(DATADIR, "{sample}_combined_nt.fasta")
+    output:
+        os.path.join(DATADIR, "indices", "{sample}_index")
+    log:
+        "logs/trinity/outputlog_{sample}_trinity.log"
+    params:
+        extra = ""
+    threads: 4
+    run:
+        path_fasta = os.path.join(DATADIR, wildcards.sample + ".fa")
+        path_tgmap = os.path.join(DATADIR, "tgMap_" + wildcards.sample + ".tsv")
+
+        # create salmon index 
+        shell("salmon index -t " + path_fasta + " -i data/indices/" + wildcards.sample + "_index -k 31")        
+        salmon_index = os.path.join(DATADIR, "indices", wildcards.sample + "_index")    

@@ -1,0 +1,70 @@
+configfile: "config.yaml"
+
+
+import io 
+import os
+import pandas
+
+DATADIR = config["datadir"]
+INPUTDIR = config["inputdir"]
+USEREVERSE = config["usereverse"]
+SUBDIRECTORY = config["subdirectory"]
+SUBDIR_TABLE = pd.read_csv(SUBDIRECTORY, sep = "\t")
+
+FILE_NAMES = SUBDIR_TABLE.File
+INDEX_NAMES = SUBDIR_TABLE.Index
+DIRECTORIES = SUBDIR_TABLE.Directory
+
+culture_name_dict = dict(zip(DIRECTORIES, INDEX_NAMES))
+
+def get_fq2(wildcards):
+    directory = os.listdir(os.path.join(INPUTDIR, wildcards.sample))
+    return os.path.join(INPUTDIR, wildcards.sample, sorted(directory)[1])
+    #return sorted(glob.glob(wildcards.sample + '*_R2_001.fastq.gz'))
+
+rule assembly:
+    input:
+        oneside = get_fq2 #os.path.join(INPUTDIR, "{sample}", "*_R2_001.fastq.gz")
+    output:
+        os.path.join(DATADIR, "{sample}_combined_nt.fasta")
+    log:
+        "logs/trinity/outputlog_{sample}_assembly.log"
+    params:
+        extra = ""
+    threads: 4
+    run:
+        # if we're assembling based on the reverse reads
+        if USEREVERSE == 1:
+            print("Ran Trinity")
+            shell("Trinity --seqType fq --single {input.oneside} --max_memory 150G")
+            shell("mv trinity_results_sample_" + dir_curr + "/Trinity.fasta " + os.path.join(DATADIR, wildcards.sample + "_combined_nt.fasta"))
+        # if we're concatenating reference files
+        else: 
+            print("Didn't run Trinity")
+            string_input = ""
+            tg_map_names = ""
+            species_sep = culture_name_dict[wildcards.sample].split("_")
+            for species in species_sep:
+                string_input = string_input + os.path.join(DATADIR, species + "_combined_nt.fasta") + " "
+                tg_map_names = tg_map_names + os.path.join(DATADIR, "tgMap_" + species + ".tsv ")
+                
+            path_fasta = os.path.join(DATADIR, list_species + ".fa")
+            path_tgmap = os.path.join(DATADIR, "tgMap_" + list_species + ".tsv")
+
+            # concatenate FASTA files
+            os.system("cat " + string_input + " > " + path_fasta)
+
+            # concatenate transcript-to-gene maps
+            os.system("cat " + tg_map_names + " > " + path_tgmap)
+            
+            # name according to output convention
+            
+            path_fasta = os.path.join(DATADIR, wildcards.sample + ".fa")
+            path_tgmap = os.path.join(DATADIR, "tgMap_" + wildcards.sample + ".tsv")
+
+            # concatenate FASTA files
+            os.system("cat " + string_input + " > " + path_fasta)
+
+            # concatenate transcript-to-gene maps
+            os.system("cat " + tg_map_names + " > " + path_tgmap)
+            

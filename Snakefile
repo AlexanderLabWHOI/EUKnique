@@ -45,10 +45,13 @@ DIRECTORIES = SUBDIR_TABLE.Directory
 
 list_cultures = INDEX_NAMES
 
-if config["maketg"] == 1:
-    import preprocessing
+#if config["maketg"] == 1:
+#    import preprocessing
+#    print("preprocessed")
+#if config["makesalmon"] == 1:
+#    import salmonwithsnake
 if config["makesalmon"] == 1:
-    import salmon
+    os.system("sbatch snake-modules/snake-submit.sh")
 
 rule all:
     input: 

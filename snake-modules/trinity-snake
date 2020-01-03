@@ -1,0 +1,24 @@
+configfile: "config.yaml"
+
+
+import io 
+import os
+
+DATADIR = config["datadir"]
+
+rule trinity:
+    input:
+        oneside = expand(os.path.join(DATADIR, "{sample}_combined_nt.fasta"
+    output:
+        os.path.join("trinity_results_sample_{sample}, "Trinity.fasta")
+    logs:
+        "logs/trinity/outputlog_{sample}_trinity.log"
+    params:
+        extra = ""
+    conda:
+        "envs/trinity-env.yaml"
+    threads: 4
+    shell:
+        """
+        Trinity --max-memory 150 G --seqType fq --single {input.oneside}
+        """

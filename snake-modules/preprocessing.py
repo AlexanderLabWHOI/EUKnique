@@ -101,11 +101,6 @@ for gg in range(0,len(MMETSP_names)):
             file_names.append(os.path.join(REFERENCEDIR, f + "_clean.fasta"))
         
     species_dir_name = os.path.join(relative_dir, DATADIR) 
-    #for f in range(0, len(file_names)):
-    #    curr_file = file_names[f]
-    #    to_write = species_dir_name + list_orgs[gg][f].replace(" ", "") + "_" + MMETSP_names[gg][f] + "_nt.fasta"
-    #    os.system("cp " + curr_file + " " + to_write)
-
     os.system("cat " + " ".join(file_names) + " > " + os.path.join(species_dir_name, list_orgs_short[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta"))
     to_write = os.path.join(species_dir_name, list_orgs_short[gg].replace(" ", "") + "_" + "combined" + "_nt.fasta")
     files_written.append(to_write) # need to extend if using list option
@@ -123,14 +118,12 @@ for ff in range(0,len(files_written)):
     os.system("touch " + file_loc)
     os.system("touch " + os.path.join(relative_dir,DATADIR,"tgMap.tsv"))
 
-    #with open(os.path.join(relative_dir,DATADIR,"tgMap.tsv"), 'wt') as tgMap_file:
     with open(file_loc, 'wt') as tgMap_file: 
         transcript_to_gene = csv.writer(tgMap_file, delimiter='\t')
         command = str("cat " + str(f) + " | grep \">\" | cut -f2 -d \">\" | cut -f1 -d \" \" > transcript_names.txt")
         os.system(command)
         transcripts = open("transcript_names.txt", "r")
         for transcript in transcripts:
-            #genes = [transcript.replace("\n",""), list_orgs_short[ff] + "-" + "DN" + transcript.split("|")[3].replace("\n", "")]
             if transcript.split("_")[0] == "TRINITY":
                 genes = [transcript.replace("\n",""),list_orgs_short[ff]+"-"+transcript.split("_")[1]]
             else:
@@ -139,7 +132,6 @@ for ff in range(0,len(files_written)):
                 genes = [transcript.replace("\n",""),list_orgs_short[ff]+"-"+"DN"+transcript.split("|")[len(transcript.split("|"))-1].replace("\n","")]
             counter = counter + 1
             transcript_to_gene.writerow(genes)
-        #os.system("mv " + os.path.join(relative_dir,DATADIR,"tgMap.tsv ") + file_loc)
     tgMap_file.close()
 
 print("Done!")

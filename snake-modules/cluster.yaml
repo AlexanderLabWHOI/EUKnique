@@ -1,0 +1,41 @@
+__default__:
+    system: 'slurm'
+    account: akrinos
+    time: 300 # in minutes
+    mem: 80 # in GB
+    threads: 5
+    queue: compute
+    nodes: 1
+    command_options:
+        slurm:
+            command: "sbatch --parsable --qos=unlim"
+            key_mapping:
+            name: "--job-name={}"
+            threads: "-n {}"
+            mem: "--mem={}g"
+            account: "--account={}"
+            queue: "--partition={}"
+            time: "--time={}" 
+            nodes: "-N {}"
+
+alevin:
+    account: akrinos
+    queue: compute
+    threads: 4
+    mem: 200
+    time: 500
+
+salmon:
+    account: akrinos
+    queue: bigmem
+    threads: 4
+    mem: 192
+    time: 500
+
+assembly:
+    account: akrinos
+    queue: compute
+    threads: 8
+    nodes: 4
+    mem: 160
+    time: 999999

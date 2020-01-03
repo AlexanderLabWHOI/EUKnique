@@ -1,0 +1,41 @@
+configfile: "config.yaml"
+
+
+import io 
+import os
+import pandas
+
+DATADIR = config["datadir"]
+USEREVERSE = config["usereverse"]
+SUBDIRECTORY = config["subdirectory"]
+SUBDIR_TABLE = pd.read_csv(SUBDIRECTORY, sep = "\t")
+
+FILE_NAMES = SUBDIR_TABLE.File
+INDEX_NAMES = SUBDIR_TABLE.Index
+DIRECTORIES = SUBDIR_TABLE.Directory
+
+culture_name_dict = dict(zip(DIRECTORIES, INDEX_NAMES))
+
+rule tgmap:
+    input:
+        os.path.join(DATADIR, "{sample}_combined_nt.fasta")
+    output:
+        os.path.join(DATADIR, "tgMap_{sample}.tsv")
+    run:
+        if USEREVERSE == 1:
+            file_loc = os.path.join(DATADIR, "tgMap_" + wildcards.sample + ".tsv")
+            os.system("touch " + file_loc)
+
+            with open(file_loc, 'wt') as tgMap_file:
+                transcript_to_gene = csv.writer(tgMap_file, delimiter='\t')
+                command = str("cat " + os.path.join(DATADIR, wildcards.sample + "_combined_nt.fasta") + " | grep \">\" | cut -f2 -d \">\" | cut -f1 -d \" \" > transcript_names.txt")
+                shell(command)
+                print(command)
+                transcripts = open("transcript_names.txt", "r")
+                for transcript in transcripts:
+                    genes = [transcript.replace("\n",""), wildcards.sample + "-" + "DN" + transcript.split("_")[1].replace("\n", "")]
+                    transcript_to_gene.writerow(genes)
+
+            tgMap_file.close()
+        else:
+            print("tg map already created")
